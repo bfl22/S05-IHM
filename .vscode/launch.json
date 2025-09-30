@@ -8,7 +8,7 @@
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
-      "url": "C:/Users/beatr/OneDrive/Documentos/S05-IHM/index.html",
+      "url": "C:/Users/beatr/OneDrive/Documentos/S05-IHM/projeto.html",
       "webRoot": "${workspaceFolder}"
     }
   ]
