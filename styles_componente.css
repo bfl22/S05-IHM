@@ -333,3 +333,43 @@ p {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Estilos para a nova seção de livros reservados */
+.livros-reservados-container {
+  background-color: white;
+  margin: 20px 10px; /* Mantém o alinhamento com outros componentes */
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.livros-reservados-container h3 {
+  margin-top: 0; /* Remove margem superior do título */
+  padding-left: 0;
+}
+
+.livro-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--cor-back1); /* Linha separadora */
+}
+
+.livro-item:last-child {
+  border-bottom: none; /* Remove a linha do último item */
+}
+
+.livro-info {
+  flex-grow: 1;
+  margin-left: 15px;
+}
+
+.livro-titulo {
+  font-weight: bold;
+}
+
+.livro-data {
+  font-size: 10px;
+  color: #666;
+  margin-top: 4px;
+}

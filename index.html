@@ -59,6 +59,24 @@
         transform: translateY(-2px);
       }
 
+      /* Estilos para o botão de renovar livro */
+      .btn-renovar {
+        flex: 0 1 auto; /* Não cresce, encolhe se necessário, baseia-se no conteúdo */
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      .btn-renovar:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-cancelar {
+        background-color: #d9534f; /* Vermelho para indicar cancelamento/perigo */
+        border-color: #d43f3a;
+      }
+
       /* Estilos para o Modal de Salas */
       .modal {
         display: none; /* Escondido por padrão */
@@ -226,12 +244,87 @@
             <button class="btn-biblioteca" id="btn-reservar-livros">
               Reservar Livros
             </button>
-            <button class="btn-biblioteca" id="btn-renovar-livros">
-              Renovar Meus Livros
-            </button>
             <button class="btn-biblioteca" id="btn-busca-externa-main">
               Busca Externa
             </button>
+          </div>
+          <!-- Seção para Renovação de Livros -->
+          <div id="renovacao-livros-container" style="margin-top: 20px">
+            <div
+              class="titulo-secao font"
+              style="
+                font-size: 18px;
+                text-align: left;
+                margin-bottom: 10px;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 5px;
+              "
+            >
+              Meus Livros para Renovação
+            </div>
+            <ul
+              id="lista-renovacao"
+              class="font"
+              style="list-style: none; padding: 0"
+            >
+              <!-- Os livros para renovação serão inseridos aqui pelo JavaScript -->
+              <li
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding: 10px;
+                  border-bottom: 1px solid #eee;
+                "
+                hidden
+              >
+                <p
+                  id="sem-livros-renovacao"
+                  class="font"
+                  style="color: #666; width: 100%; text-align: center"
+                >
+                  Você não possui livros próximos do vencimento para renovação.
+                </p>
+              </li>
+            </ul>
+          </div>
+          <!-- Seção para Salas Reservadas -->
+          <div id="salas-reservadas-container" style="margin-top: 20px">
+            <div
+              class="titulo-secao font"
+              style="
+                font-size: 18px;
+                text-align: left;
+                margin-bottom: 10px;
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 5px;
+              "
+            >
+              Minhas Salas Reservadas
+            </div>
+            <ul
+              id="lista-salas-reservadas"
+              class="font"
+              style="list-style: none; padding: 0"
+            >
+              <!-- As salas reservadas serão inseridas aqui pelo JavaScript -->
+              <li
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding: 10px;
+                "
+              >
+                <p
+                  id="sem-salas-reservadas"
+                  class="font"
+                  style="color: #666; width: 100%; text-align: center"
+                >
+                  Você não possui salas reservadas no momento.
+                </p>
+              </li>
+            </ul>
           </div>
           <!-- Container para a lista de salas, escondido por padrão -->
           <div id="lista-salas-container" style="display: none">
@@ -239,7 +332,6 @@
               <!-- As salas serão inseridas aqui pelo JavaScript -->
             </ul>
           </div>
-          <!-- Container para a lista de livros, escondido por padrão -->
           <div id="lista-livros-container" style="display: none">
             <div style="padding: 0 10px 10px 10px">
               <input
@@ -487,9 +579,7 @@
         <!-- Container para Minhas Solicitações -->
         <div
           id="minhas-solicitacoes-container"
-          style="margin-bottom: 20px"
-          id="minhas-solicitacoes-container"
-          style="display: none; margin: 20px"
+          style="display: none; margin: 20px; margin-bottom: 20px"
         >
           <div class="titulo-secao font">
             <b>Minhas Solicitações</b>
