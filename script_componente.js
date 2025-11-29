@@ -476,6 +476,23 @@ document.addEventListener("DOMContentLoaded", () => {
           "click",
           () => {
             // Lógica de cancelamento...
+            // Remove a sala da lista de reservas do usuário
+            minhasSalasReservadas = minhasSalasReservadas.filter(
+              (reserva) => reserva.nome !== nomeSalaParaCancelar
+            );
+
+            // Marca a sala como disponível novamente no array principal
+            const salaOriginal = salas.find(
+              (s) => s.nome === nomeSalaParaCancelar
+            );
+            if (salaOriginal) salaOriginal.reservada = false;
+
+            // Atualiza as listas na interface
+            renderizarSalasReservadas(); // Atualiza a lista "Minhas Salas Reservadas"
+            renderizarSalas(); // Atualiza a lista principal de salas para o próximo pop-up
+
+            // Fecha o modal
+            modalConfirmacao.style.display = "none";
           },
           { once: true }
         );
@@ -672,6 +689,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Alterado para ouvir cliques no modal, pois a lista agora está dentro dele
+  // Este listener precisa ser movido para dentro do evento de clique do btnReservarLivros
+  // ou ser delegado de uma forma que capture os elementos do modal.
+  // A delegação no modal já existe, mas está incompleta.
+
+  // A correção é garantir que o listener de clique no modal também trate os livros.
   modalConfirmacao.addEventListener("click", function handleLivroClick(e) {
     if (!e.target.closest("#lista-livros")) return;
 
@@ -761,6 +783,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Adiciona o listener de clique para livros ao modal, junto com o de salas.
+  // O listener de clique no modal já existe, então vamos garantir que ele cubra os livros.
+  // A função `handleLivroClick` já está sendo adicionada ao `modalConfirmacao`,
+  // então a lógica está correta, mas a implementação anterior pode ter sido afetada.
+  // Vamos garantir que a delegação de eventos no modal esteja robusta.
   // Adiciona evento de clique aos botões "Renovar" (usando delegação de evento no container)
   listaRenovacao.addEventListener("click", (e) => {
     if (e.target && e.target.classList.contains("btn-renovar")) {
