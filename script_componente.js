@@ -434,9 +434,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Se houver salas, cria os itens da lista
       minhasSalasReservadas.forEach((reserva) => {
         const li = document.createElement("li");
-        li.style.display = "flex";
-        li.style.justifyContent = "space-between";
-        li.style.alignItems = "center";
         li.style.padding = "10px";
         li.style.borderBottom = "1px solid #eee";
         li.innerHTML = `
@@ -444,7 +441,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <strong style="font-size: 15px;">${reserva.nome}</strong>
             <p style="font-size: 13px; color: #d9534f; margin: 2px 0 0 0;">Devolver até: <b>${reserva.devolucao}</b></p>
           </div>
-          <button class="btn-biblioteca btn-cancelar btn-cancelar-reserva-sala" data-sala-nome="${reserva.nome}" style="flex: 0 1 auto; padding: 8px 12px; font-size: 12px;">Cancelar</button>
         `;
         listaContainer.appendChild(li);
       });
@@ -452,63 +448,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let livrosReservadosPeloUsuario = [];
-
-  // Adiciona evento de clique para cancelar a reserva da sala
-  document
-    .getElementById("lista-salas-reservadas")
-    .addEventListener("click", (e) => {
-      if (
-        e.target &&
-        e.target.classList.contains("btn-cancelar-reserva-sala")
-      ) {
-        const nomeSalaParaCancelar = e.target.getAttribute("data-sala-nome");
-
-        // Mostra o modal de confirmação para o cancelamento
-        conteudoConfirmacao.innerHTML = `
-          <h2 class="titulo-secao" style="text-align: center;">Confirmar Cancelamento</h2>
-          <p class="font" style="text-align: center; font-size: 14px; line-height: 1.5;">
-            Tem certeza que deseja cancelar a reserva da "<b>${nomeSalaParaCancelar}</b>"?
-          </p>
-          <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button id="btn-nao-cancelar" class="btn-biblioteca" style="flex: 1; background-color: #8d99ae;">Não</button>
-            <button id="btn-sim-cancelar" class="btn-biblioteca btn-cancelar" style="flex: 1;">Sim, cancelar</button>
-          </div>
-        `;
-        modalConfirmacao.style.display = "flex";
-
-        // Evento para o botão "Não"
-        document
-          .getElementById("btn-nao-cancelar")
-          .addEventListener("click", () => {
-            modalConfirmacao.style.display = "none";
-          });
-
-        // Evento para o botão "Sim, cancelar"
-        document.getElementById("btn-sim-cancelar").addEventListener(
-          "click",
-          () => {
-            // Remove a sala da lista de reservas do usuário
-            minhasSalasReservadas = minhasSalasReservadas.filter(
-              (reserva) => reserva.nome !== nomeSalaParaCancelar
-            );
-
-            // Marca a sala como disponível novamente no array principal
-            const salaOriginal = salas.find(
-              (s) => s.nome === nomeSalaParaCancelar
-            );
-            if (salaOriginal) salaOriginal.reservada = false;
-
-            // Atualiza as listas na interface
-            renderizarSalasReservadas(); // Atualiza a lista "Minhas Salas Reservadas"
-            renderizarSalas(); // Atualiza a lista principal de salas para o próximo pop-up
-
-            // Fecha o modal
-            modalConfirmacao.style.display = "none";
-          },
-          { once: true }
-        );
-      }
-    });
 
   // --- LÓGICA PARA SALAS ---
   // Função para gerar a lista de salas
@@ -552,28 +491,6 @@ document.addEventListener("DOMContentLoaded", () => {
       salaClicada.tagName === "LI" &&
       !salaClicada.classList.contains("reservada")
     ) {
-      // VERIFICA SE JÁ EXISTE UMA SALA RESERVADA
-      if (minhasSalasReservadas.length > 0) {
-        conteudoConfirmacao.innerHTML = `
-          <h2 class="titulo-secao" style="text-align: center;">Atenção</h2>
-          <p class="font" style="text-align: center; font-size: 14px; line-height: 1.5;">
-            Não é possível reservar duas salas ao mesmo tempo.
-            <br><br>
-            Assim que o tempo da sua reserva atual acabar, você poderá reservá-la novamente ou outra sala.
-          </p>
-          <button id="btn-fechar-alerta" class="btn-biblioteca" style="width: 100%; margin-top: 15px;">OK</button>
-        `;
-        modalConfirmacao.style.display = "flex";
-
-        document
-          .getElementById("btn-fechar-alerta")
-          .addEventListener("click", () => {
-            modalConfirmacao.style.display = "none";
-          });
-
-        return; // Impede que o fluxo de reserva continue
-      }
-
       const nomeSala = salaClicada.dataset.salaNome;
 
       // Calcula horários
@@ -796,47 +713,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const livro = meusLivrosEmprestados.find((l) => l.id === livroId);
 
       if (livro && livro.renovavel) {
-        // Calcula a nova data de vencimento
-        const dataVencimentoAtual = new Date(livro.vencimento + "T00:00:00");
-        const novaDataVencimento = new Date(dataVencimentoAtual);
-        novaDataVencimento.setDate(novaDataVencimento.getDate() + 15);
-
-        // Garante que a nova data seja um dia útil
-        if (novaDataVencimento.getDay() === 6) {
-          // Sábado
-          novaDataVencimento.setDate(novaDataVencimento.getDate() + 2);
-        } else if (novaDataVencimento.getDay() === 0) {
-          // Domingo
-          novaDataVencimento.setDate(novaDataVencimento.getDate() + 1);
-        }
-
-        // Atualiza os dados do livro
-        livro.vencimento = novaDataVencimento.toISOString().split("T")[0];
         livro.renovado = true;
         livro.renovavel = false; // Impede renovações múltiplas
 
-        // Re-renderiza a lista para mostrar a data atualizada e o botão desabilitado
-        renderizarLivrosParaRenovacao();
-
-        // Mostra a confirmação no modal
-        conteudoConfirmacao.innerHTML = `
-          <h2 class="titulo-secao" style="text-align: center;">Sucesso!</h2>
-          <p class="font" style="text-align: center; font-size: 14px; line-height: 1.5;">
-            O livro "<b>${livro.titulo}</b>" foi renovado com sucesso.
-            <br>Nova data de devolução: <b>${novaDataVencimento.toLocaleDateString(
-              "pt-BR"
-            )}</b>
-          </p>
-          <button id="btn-fechar-sucesso" class="btn-biblioteca" style="width: 100%; margin-top: 15px;">OK</button>
-        `;
-        modalConfirmacao.style.display = "flex";
-
-        // Adiciona o evento de clique ao botão "OK" para fechar o modal
-        document
-          .getElementById("btn-fechar-sucesso")
-          .addEventListener("click", () => {
-            modalConfirmacao.style.display = "none";
-          });
+        // Atualiza a interface
+        e.target.disabled = true;
+        e.target.textContent = "Renovado";
+        alert(`O livro "${livro.titulo}" foi renovado com sucesso!`);
       }
     }
   });
@@ -917,71 +800,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnBuscaExternaMain) {
     btnBuscaExternaMain.addEventListener("click", mostrarMinhasSolicitacoes);
   }
-
-  // Usa delegação de eventos no modal para lidar com os cliques
-  modalConfirmacao.addEventListener("click", (e) => {
-    // Botão "Criar Nova Sugestão"
-    if (e.target.id === "btn-criar-sugestao") {
-      mostrarFormBuscaExterna();
-    }
-
-    // Botão "Cancelar" do formulário
-    if (e.target.id === "btn-cancelar-sugestao") {
-      mostrarMinhasSolicitacoes();
-    }
-  });
-
-  // Usa delegação de eventos no modal para o envio do formulário
-  modalConfirmacao.addEventListener("submit", (e) => {
-    if (e.target.id === "form-busca-externa") {
-      e.preventDefault();
-
-      const form = e.target;
-      const formData = new FormData(form);
-      const novaSolicitacao = {
-        nomeAluno: "Beatriz",
-        matricula: "632",
-        titulo: formData.get("titulo-completo"),
-        dataSolicitacao: new Date(),
-        status: "Em análise",
-      };
-
-      minhasSolicitacoes.unshift(novaSolicitacao);
-      form.reset();
-      mostrarMinhasSolicitacoes(); // Volta para a lista de solicitações
-    }
-  });
-
-  // if (btnBuscaExternaSecundario) {
-  //   btnBuscaExternaSecundario.addEventListener(
-  //     "click",
-  //     mostrarMinhasSolicitacoes
-  //   );
-  // }
-
-  // // Adiciona evento ao botão "Criar Nova Sugestão"
-  // if (btnCriarSugestao) {
-  //   btnCriarSugestao.addEventListener("click", mostrarFormBuscaExterna);
-  // }
-
-  // // Adiciona evento ao botão "Cancelar" do formulário
-  // if (btnCancelarSugestao) {
-  //   btnCancelarSugestao.addEventListener("click", mostrarMinhasSolicitacoes);
-  // }
-
-  // // Adiciona evento de envio ao formulário
-  // if (formBuscaExterna) {
-  //   formBuscaExterna.addEventListener("submit", function (e) {
-  //     e.preventDefault(); // Impede o recarregamento da página
-
-  //     // Coleta os dados do formulário
-  //     const formData = new FormData(formBuscaExterna);
-
-  //     minhasSolicitacoes.unshift(novaSolicitacao); // Adiciona a nova solicitação no início da lista
-  //     formBuscaExterna.reset(); // Limpa o formulário
-  //     mostrarMinhasSolicitacoes(); // Volta para a tela de solicitações para ver o item adicionado
-  //   });
-  // }
 
   // --- INICIALIZAÇÃO E GERAL ---
 
