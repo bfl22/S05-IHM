@@ -409,9 +409,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!listaContainer) return;
 
     listaContainer.innerHTML = ""; // Limpa a lista
-    li.style.display = "flex";
-    li.style.justifyContent = "space-between";
-    li.style.alignItems = "center";
 
     if (minhasSalasReservadas.length === 0) {
       // Se não houver salas, mostra a mensagem padrão
